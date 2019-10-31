@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="picture.css" type="text/css">
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<div class="container">
+			<div class="pictures" style="left:-600px">
+				<img src="5.jpg" alt="5"><img src="1.jpg" alt="1" class="p1"><img src="2.jpg" alt="2"><img src="3.jpg" alt="3"><img src="4.jpg" alt="4"><img src="5.jpg" alt="5"><img src="1.jpg" alt="1">
+			</div>
+			<div id="buttons">
+				<span index="1" class="on"></span>
+				<span index="2"></span>
+				<span index="3"></span>
+				<span index="4"></span>
+				<span index="5"></span>
+			</div>
+			<div class="arrow">
+			    <div class="previous">&lt;</div>
+		        <div class="next">&gt;</div>
+		    </div>
+		</div>
+		
+	</body>
+	<script type="text/javascript">
+		
+		
+		var pictures = document.getElementsByClassName('pictures')[0];
+		
+		var previous = document.getElementsByClassName('previous')[0];
+		
+		var next = document.getElementsByClassName('next')[0];
+		
+		var buttons = document.getElementById("buttons").getElementsByTagName('span');
+		
+		var container = document.getElementsByClassName('container')[0];
+		
+		
+		// var move = 0;//图片
+		
+		var index = 1;//小圆点
+		
+		var flag;
+		
+	//平移函数
+		function animate(element,distance){
+			
+			clearInterval(element.timer);
+			
+			element.timer = setInterval(function(){
+				
+				var present=element.offsetLeft;
+				
+				var movement = 10;
+				
+				movement = present < distance ? movement : -movement;
+				
+				present = present + movement;
+				
+				if(Math.abs(present-distance)>Math.abs(movement)){
+					
+					element.style.left = present+'px';
+					
+					flag = false;
+					
+				}
+				
+				else{
+					
+				    clearInterval(element.timer);
+					
+					element.style.left=distance+'px';
+					
+					flag = true;
+					
+				}
+				
+			},10);
+		 }
+		
+		
+		
+		//小圆点展示
+		function buttonsShow(){
+			
+			for(var i=0 ; i<5; i++){
+				
+				if(buttons[i].className == 'on'){
+					
+					buttons[i].className = '';
+				}
+			}
+			
+			buttons[index-1].className = 'on';
+			
+		}
+		//切换图片
+		previous.onclick=function(){
+			   
+			   if(flag || flag == undefined){
+				
+				if(index == 1){
+					
+					index=5;
+					
+					buttonsShow();
+						
+					pictures.style.left = -3600 + 'px';
+						
+					animate(pictures,-3000);
+						
+				}
+				
+				else{
+				
+				index--;
+				
+				buttonsShow();
+				
+				animate(pictures,-(index)*600);}
+				   
+			   }
+			
+		}
+		
+		next.onclick=function(){
+			
+			if(flag || flag == undefined){
+				
+				if(index == 5){
+					
+					index=1;
+					
+					buttonsShow();
+						
+					pictures.style.left = 0 + 'px';
+						
+					animate(pictures,-600);
+				    
+				}
+				
+				else
+				
+				{
+				
+				index++;
+				
+				animate(pictures,-(index)*600);
+				
+				buttonsShow();
+				}
+				
+			}
+			
+		}
+		
+		//点击小圆点
+		for(var i = 0 ; i < 5 ; i++){
+			
+			(function(i){
+				
+				buttons[i].onclick =function(){
+					
+					var clickIndex = parseInt(this.getAttribute('index'));
+					
+					var offset = - clickIndex * 600;
+				
+					animate(pictures , offset);
+					
+					index = clickIndex;
+					
+					
+					buttonsShow();
+				}
+				
+			})(i)
+		}
+		//自动播放
+		var timer =null;
+		
+		function autoPlay(){
+			
+			timer = setInterval(function(){
+				
+				next.onclick();
+				
+			},2000);
+			
+		}
+		
+		autoPlay();
+		
+		//鼠标控制
+		container.onmouseleave=function(){
+			
+			autoPlay();
+			
+		}
+		
+		container.onmouseenter=function(){
+			
+			clearInterval(timer);
+			
+		}
+		
+		function debounce(fn,wait){
+			var timeout = null;
+			return function(){
+				if(timeout != null)
+				clearTimeout(timeout);
+				timeout = setTimeout(fn,wait);
+			}
+		}
+		
+		window.addEventListener('onclick',debouce(next.onclick,1000));
+	</script>
+</html>
